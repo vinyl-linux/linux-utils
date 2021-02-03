@@ -41,6 +41,7 @@ var useraddCmd = &cobra.Command{
 	Use:   "useradd [flags] username",
 	Short: "Add a user to this system",
 	Long:  `Add a user to this system`,
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		grp, err = group.Read()
 		if err != nil {
