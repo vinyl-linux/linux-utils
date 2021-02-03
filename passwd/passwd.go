@@ -175,11 +175,10 @@ func (p Passwd) NextUID(system bool) (i int, err error) {
 	return
 }
 
-func (p Passwd) nextUID(min, max int) (highest int) {
-	highest = min
-	for _, entry := range p {
-		if entry.UID < max && entry.UID > min && entry.UID > highest {
-			highest = entry.UID + 1
+func (p Passwd) nextUID(min, max int) (i int) {
+	for i = min; i <= max; i++ {
+		if !p.UIDExists(i) {
+			return
 		}
 	}
 
