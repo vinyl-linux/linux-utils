@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 package main
 
-import "github.com/vinyl-linux/linux-utils/useradd/cmd"
+import "github.com/vinyl-linux/linux-utils/bin/cmd"
 
 func main() {
 	cmd.Execute()
