@@ -23,7 +23,7 @@ var (
 	UserMin = 1000
 	UserMax = 10000
 
-	passwdTempl = template.Must(template.New("row").Parse("{{ .Username }}:{{ .Password }}:{{ .UID }}:{{ .GUID }}:{{ .Comment }}:{{ .Home }}:{{ .LoginShell }}\n"))
+	passwdTempl = template.Must(template.New("row").Parse("{{ .Username }}:{{ .Password }}:{{ .UID }}:{{ .GID }}:{{ .Comment }}:{{ .Home }}:{{ .LoginShell }}\n"))
 )
 
 // Passwd holds all of the entries from the passwd file
@@ -67,9 +67,13 @@ func Read() (p Passwd, err error) {
 			break
 		}
 
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
 		components := strings.Split(strings.TrimSpace(line), ":")
 		if len(components) != 7 {
-			return p, fmt.Errorf("unexpected number of components in line %d: expected 7, receieved %d", lineno, len(components))
+			return p, fmt.Errorf("%s: unexpected number of components in line %d: expected 7, receieved %d", File, lineno, len(components))
 		}
 
 		entry := Entry{

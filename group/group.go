@@ -57,9 +57,13 @@ func Read() (p Group, err error) {
 			break
 		}
 
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
 		components := strings.Split(strings.TrimSpace(line), ":")
 		if len(components) != 4 {
-			return p, fmt.Errorf("unexpected number of components in line %d: expected 4, receieved %d", lineno, len(components))
+			return p, fmt.Errorf("%s: unexpected number of components in line %d: expected 4, receieved %d", File, lineno, len(components))
 		}
 
 		entry := Entry{
@@ -93,6 +97,8 @@ func (p Group) Write() (err error) {
 	var b bytes.Buffer
 
 	for _, entry := range p {
+		entry.UsersCSV = strings.Join(entry.Users, ",")
+
 		err = groupTempl.Execute(&b, entry)
 		if err != nil {
 			return
@@ -144,4 +150,30 @@ func (p Group) NextGID() (i int, err error) {
 	}
 
 	return
+}
+
+// AddUser adds a user to a group (denoted by the Group ID)
+func (p *Group) AddUser(g int, user string) (err error) {
+	for idx, entry := range *p {
+		if entry.GID == g {
+			entry.Users = append(entry.Users, user)
+
+			(*p)[idx] = entry
+
+			return
+		}
+	}
+
+	return fmt.Errorf("no such group with id %d", g)
+}
+
+// ByName returns the group which exists with the specified name
+func (p Group) ByName(s string) (g Entry, err error) {
+	for _, entry := range p {
+		if entry.Name == s {
+			return entry, nil
+		}
+	}
+
+	return g, fmt.Errorf("no such group with name %s", s)
 }
