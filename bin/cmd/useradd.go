@@ -65,6 +65,7 @@ func init() {
 	useraddCmd.Flags().StringVarP(&home, "home", "d", "", "directory to be used as homedir. If set, -d is ignored")
 	useraddCmd.Flags().StringVarP(&expiry, "expiry", "e", "", "if set, the day on which this account is to be disabled")
 	useraddCmd.Flags().IntVarP(&gid, "gid", "g", -1, "groupid, to set as this user's primary group. Must exist. If empty, a new group is created with the same name as the requested user")
+	useraddCmd.Flags().StringVarP(&groupName, "group", "", "", "group to set as this user's primary group. Must exist. If also set, -g/--gid has precedence")
 	useraddCmd.Flags().StringSliceVarP(&groups, "extra-groups", "G", []string{}, "additional groups to add user to")
 	useraddCmd.Flags().StringVarP(&skel, "skel", "k", "", "a skeleton directory contains files and directories to be copied into the new homedir")
 	useraddCmd.Flags().BoolVarP(&system, "system", "r", false, "create a system account (lower UID, no expiry, no homedir unless specified)")

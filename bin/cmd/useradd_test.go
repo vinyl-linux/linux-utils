@@ -46,10 +46,12 @@ func TestUseradd(t *testing.T) {
 	}{
 		{"happy path", []string{"useradd", "gopher"}, "testdata/simple.passwd", "testdata/simple.group", false},
 		{"new user, plus extra groups", []string{"useradd", "-G", "root", "gopher"}, "testdata/simple.passwd", "testdata/simple.group", false},
+		{"new user, add to existing group", []string{"useradd", "gopher", "--group", "root"}, "testdata/simple.passwd", "testdata/simple.group", false},
 		{"user exists", []string{"useradd", "root"}, "testdata/simple.passwd", "testdata/simple.group", true},
 		{"uid exists", []string{"useradd", "toor", "-u", "0"}, "testdata/simple.passwd", "testdata/simple.group", true},
 		{"run out of system uids", []string{"useradd", "toor", "--system"}, "testdata/full-system.passwd", "testdata/simple.group", true},
 		{"primary gid doesn't exist", []string{"useradd", "toor", "-g", "999"}, "testdata/simple.passwd", "testdata/simple.group", true},
+		{"primary group doesn't exist", []string{"useradd", "toor", "--group", "foo"}, "testdata/simple.passwd", "testdata/simple.group", true},
 		{"skel copies stuff", []string{"useradd", "gopher", "-k", "testdata/"}, "testdata/simple.passwd", "testdata/simple.group", false},
 	} {
 		t.Run(test.name, func(t *testing.T) {

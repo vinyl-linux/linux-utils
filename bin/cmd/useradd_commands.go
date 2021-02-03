@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/otiai10/copy"
+	"github.com/vinyl-linux/linux-utils/group"
 	"github.com/vinyl-linux/linux-utils/passwd"
 )
 
@@ -36,6 +37,16 @@ func Useradd(user string) (err error) {
 		if !grp.GIDExists(gid) {
 			return fmt.Errorf("gid %d doesn't correspond to an actual group", gid)
 		}
+	} else if groupName != "" {
+		// what about group on the command line?
+		var g group.Entry
+
+		g, err = grp.ByName(groupName)
+		if err != nil {
+			return
+		}
+
+		gid = g.GID
 	} else {
 		// if not, create
 		// can we have the same gid as uid?

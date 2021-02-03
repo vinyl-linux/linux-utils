@@ -55,6 +55,7 @@ var (
 	shell        string
 	uid          int
 	gid          int
+	groupName    string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -95,4 +96,5 @@ func reset() {
 	shell = "/bin/sh"
 	uid = -255
 	gid = -225
+	groupName = ""
 }
