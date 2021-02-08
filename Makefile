@@ -1,6 +1,11 @@
 PREFIX ?= ""
 BINDIR ?= "$(PREFIX)/bin"
 
+BINARIES := $(BINDIR)/linux-utils
+SCRIPTS := $(BINDIR)/useradd \
+	   $(BINDIR)/groupadd
+
+
 .PHONY: default install
 
 default: linux-utils
@@ -14,10 +19,7 @@ $(BINDIR):
 $(BINDIR)/linux-utils: linux-utils $(BINDIR)
 	install -m 0750 -o root $< $@
 
-$(BINDIR)/useradd: scripts/useradd $(BINDIR)
+$(BINDIR)/%: scripts/% $(BINDIR)
 	install -m 0750 -o root $< $@
 
-$(BINDIR)/groupadd: scripts/groupadd $(BINDIR)
-	install -m 0750 -o root $< $@
-
-install: $(BINDIR)/linux-utils $(BINDIR)/useradd $(BINDIR)/groupadd
+install: $(BINARIES) $(SCRIPTS)
