@@ -5,6 +5,7 @@ package netctl
 import (
     "context"
     "fmt"
+    "log"
     "net"
 
     "github.com/insomniacslk/dhcp/dhcpv4"
@@ -71,6 +72,8 @@ func NewProfile() Profile {
 
 // Up will bring an interface up
 func (p Profile) Up() (err error) {
+    log.Printf("Bringing interface %q up", p.Interface)
+
     p.link, err = handle.LinkByName(p.Interface)
     if err != nil {
         return
@@ -80,30 +83,42 @@ func (p Profile) Up() (err error) {
         p.IPv4,
         p.IPv6,
     } {
+        log.Printf("idx: %d, addr: %#v", idx, addr)
         if !addr.Enable {
+            log.Printf("not enabled; continue")
             continue
         }
 
+        log.Printf("enabled!")
+
         addr.Parse()
 
+        log.Printf("addr parsed into %#v", addr)
+
         if addr.DHCP {
+            log.Printf("doing dhcp")
             err = p.PopulateFromDHCP(idx, &addr)
             if err != nil {
                 return
             }
         }
 
+        log.Printf("got some dhcp config, addr is now: %#v", addr)
+
         for _, f := range []func(Address) error{
             p.SetAddress,
             p.SetGateway,
         } {
+            log.Printf("doing func %#v", f)
+
             err = f(addr)
             if err != nil {
-                return
+                panic(err)
             }
         }
     }
 
+    log.Printf("ready to bring up")
     return p.BringUp()
 }
 
@@ -122,22 +137,29 @@ func (p Profile) Down() (err error) {
 // 5. Return
 func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
     if p.dclient == nil {
+        log.Print("no dhcp client, creating")
+
         p.dclient, err = nclient4.New(p.link.Attrs().Name)
         if err != nil {
-            return
+            panic(err)
         }
+
+        log.Printf("dclient: %#v", p.dclient)
     }
 
+    log.Print("bringing if up")
     err = p.BringUp()
     if err != nil {
-        return
+        panic(err)
     }
 
+    log.Print("defering dropping (so we can bring it up after setting up")
     // Bring back up after setting address
     defer p.Down()
 
     switch idx {
     case 0:
+        log.Print("idx is 0, meaning this is for an IPv4 network")
         a.AddressParsed, a.GatewayParsed, a.NetmaskParsed, err = p.negotiateIPV4()
 
     default:
@@ -148,10 +170,14 @@ func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
 }
 
 func (p Profile) negotiateIPV4() (address, gateway net.IP, netmask net.IPMask, err error) {
+    log.Printf("negotiating eth0")
+
     offer, err := p.dclient.DiscoverOffer(context.Background())
     if err != nil {
-        return
+        panic(err)
     }
+
+    log.Printf("got:\n%#v\n%v", offer, offer)
 
     address = offer.YourIPAddr
     netmask = net.IPMask(net.IP(offer.Options.Get(dhcpv4.OptionSubnetMask)))
@@ -169,19 +195,27 @@ func (p Profile) SetAddress(a Address) (err error) {
         },
     }
 
+    log.Printf("configuring address %#v", ipConfig)
+
     return handle.AddrAdd(p.link, ipConfig)
 }
 
 // SetGateway uses netlink to set the gateway of an interface
 func (p Profile) SetGateway(a Address) (err error) {
-    return handle.RouteAdd(&netlink.Route{
+    route := &netlink.Route{
         Scope:     netlink.SCOPE_UNIVERSE,
         LinkIndex: p.link.Attrs().Index,
         Dst:       &net.IPNet{IP: a.GatewayParsed, Mask: net.CIDRMask(32, 32)},
-    })
+    }
+
+    log.Printf("adding route %#v", route)
+
+    return handle.RouteAdd(route)
 }
 
 // BringUp uses netlink to bring an interface up
 func (p Profile) BringUp() (err error) {
+    log.Printf("bringing up")
+
     return handle.LinkSetUp(p.link)
 }
