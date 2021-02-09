@@ -1,0 +1,5 @@
+interface = "test0"
+
+[IPv4]
+enable = true
+dhcp = true

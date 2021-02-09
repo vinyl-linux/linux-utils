@@ -1,3 +1,5 @@
+// +build linux
+
 /*
 Copyright © 2021 James Condron <james@zero-internet.org.uk>
 All rights reserved.
@@ -31,73 +33,26 @@ POSSIBILITY OF SUCH DAMAGE.
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
-	"github.com/vinyl-linux/linux-utils/netctl"
 )
 
-var (
-	dollar0   string
-	useString string
-)
-
-// Command Line args
-var (
-	basedir      string
-	comment      string
-	home         string
-	expiry       string
-	groups       []string
-	skel         string
-	noCreateHome bool
-	system       bool
-	shell        string
-	uid          int
-	gid          int
-	groupName    string
-	netctlDir    string
-)
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Short: "Vinyl Linux Utils",
-	Long: `This utility provides a series of commands and tools for managing a vinyl linux install.
-
-It is inspired, largely, by busybox and, in much the same way, provides many commands from a single binary.
-The reason for this is simple: it cuts down on disk usage, while providing an interface to the same commands.
-
-This utility is best used from any number of bash scripts which call it.
-`,
-	Use:  "linux-utils subcommand [args] [flags]",
-	Args: cobra.ExactArgs(1),
+// netctlCmd represents the netctl command
+var netctlCmd = &cobra.Command{
+	Use:   "netctl",
+	Short: "start/stop/manage network config",
+	Long:  "start/stop/manage network config",
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	reset()
+func init() {
+	rootCmd.AddCommand(netctlCmd)
 
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
+	// Here you will define your flags and configuration settings.
 
-func reset() {
-	// Set some initial, empty, default values
-	basedir = "/home/"
-	comment = ""
-	home = ""
-	expiry = ""
-	groups = make([]string, 0)
-	skel = ""
-	noCreateHome = false
-	system = false
-	shell = "/bin/sh"
-	uid = -255
-	gid = -225
-	groupName = ""
-	netctlDir = netctl.DefaultPath
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// netctlCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// netctlCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

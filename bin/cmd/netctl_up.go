@@ -1,3 +1,5 @@
+// +build linux
+
 /*
 Copyright © 2021 James Condron <james@zero-internet.org.uk>
 All rights reserved.
@@ -31,73 +33,59 @@ POSSIBILITY OF SUCH DAMAGE.
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 	"github.com/vinyl-linux/linux-utils/netctl"
 )
 
-var (
-	dollar0   string
-	useString string
-)
+// upCmd represents the up command
+var netctl_upCmd = &cobra.Command{
+	Use:   "up [iface | all]",
+	Short: "Start stored network profiles",
+	Long: `Start stored network profiles.
 
-// Command Line args
-var (
-	basedir      string
-	comment      string
-	home         string
-	expiry       string
-	groups       []string
-	skel         string
-	noCreateHome bool
-	system       bool
-	shell        string
-	uid          int
-	gid          int
-	groupName    string
-	netctlDir    string
-)
-
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Short: "Vinyl Linux Utils",
-	Long: `This utility provides a series of commands and tools for managing a vinyl linux install.
-
-It is inspired, largely, by busybox and, in much the same way, provides many commands from a single binary.
-The reason for this is simple: it cuts down on disk usage, while providing an interface to the same commands.
-
-This utility is best used from any number of bash scripts which call it.
+This command takes either an interface (eth0, wlan1, etc.) or the word "all" which brings all interfaces up
 `,
-	Use:  "linux-utils subcommand [args] [flags]",
 	Args: cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) (err error) {
+		n, err := netctl.New(netctlDir)
+		if err != nil {
+			return
+		}
+
+		return netctlUpDo(args[0], n)
+	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	reset()
-
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+func netctlUpDo(iface string, n netctl.Netctl) error {
+	if iface == "all" {
+		return netctlUpDoAll(n)
 	}
+
+	return netctlUpIface(iface, n)
 }
 
-func reset() {
-	// Set some initial, empty, default values
-	basedir = "/home/"
-	comment = ""
-	home = ""
-	expiry = ""
-	groups = make([]string, 0)
-	skel = ""
-	noCreateHome = false
-	system = false
-	shell = "/bin/sh"
-	uid = -255
-	gid = -225
-	groupName = ""
-	netctlDir = netctl.DefaultPath
+func netctlUpDoAll(n netctl.Netctl) (err error) {
+	for _, i := range n.Profiles {
+		err = i.Up()
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func netctlUpIface(iface string, n netctl.Netctl) (err error) {
+	p, err := n.Profile(iface)
+	if err != nil {
+		return
+	}
+
+	return p.Up()
+}
+
+func init() {
+	netctlCmd.AddCommand(netctl_upCmd)
+
+	netctl_upCmd.Flags().StringVarP(&netctlDir, "basedir", "b", netctl.DefaultPath, "location of network config files")
 }
