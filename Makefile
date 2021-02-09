@@ -32,6 +32,6 @@ scripts/%:
 	@echo "#!/bin/sh -e\n\n$(BINDIR)/linux-utils $* \"\$${@}\"" > $@
 
 $(CONFDIR)/eth0.toml.sample: $(CONFDIR)
-	@echo 'interface = "eth0"\n\n[IPv4]\n dhcp = true\n enable = true' > $@
+	@echo -e 'interface = "eth0"\n\n[IPv4]\n dhcp = true\n enable = true' > $@
 
 install: $(BINARIES) $(SCRIPTS) $(CONFIGS)
