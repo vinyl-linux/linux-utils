@@ -68,7 +68,7 @@ The reason for this is simple: it cuts down on disk usage, while providing an in
 
 This utility is best used from any number of bash scripts which call it.
 `,
-	Use:  "linux-utils subdommand [args] [flags]",
+	Use:  "linux-utils subcommand [args] [flags]",
 	Args: cobra.ExactArgs(1),
 }
 
