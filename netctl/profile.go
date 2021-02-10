@@ -6,10 +6,15 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/insomniacslk/dhcp/dhcpv4"
 	"github.com/insomniacslk/dhcp/dhcpv4/nclient4"
 	"github.com/vishvananda/netlink"
+)
+
+var (
+	ResolvFile = "/etc/resolv.conf"
 )
 
 // Address holds the configuration necessary for setting
@@ -126,18 +131,20 @@ func (p Profile) Down() (err error) {
 // 4. Take the interface back down (to allow netlink to control the iface)
 // 5. Return
 func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
+	var nameserver net.IP
+
 	switch idx {
 	case 0:
-		a.AddressParsed, a.GatewayParsed, a.NetmaskParsed, err = p.negotiateIPV4()
+		a.AddressParsed, a.GatewayParsed, nameserver, a.NetmaskParsed, err = p.negotiateIPV4()
 
 	default:
 		err = fmt.Errorf("unknown index #%d", idx)
 	}
 
-	return
+	return writeResolv(nameserver)
 }
 
-func (p Profile) negotiateIPV4() (address, gateway net.IP, netmask net.IPMask, err error) {
+func (p Profile) negotiateIPV4() (address, gateway, nameserver net.IP, netmask net.IPMask, err error) {
 	if p.dclient4 == nil {
 		if Verbose {
 			p.dclient4, err = nclient4.New(p.Interface, nclient4.WithDebugLogger())
@@ -160,6 +167,7 @@ func (p Profile) negotiateIPV4() (address, gateway net.IP, netmask net.IPMask, e
 	address = offer.YourIPAddr
 	netmask = net.IPMask(net.IP(offer.Options.Get(dhcpv4.OptionSubnetMask)))
 	gateway = net.IP(offer.Options.Get(dhcpv4.OptionRouter))
+	nameserver = net.IP(offer.Options.Get(dhcpv4.OptionDomainNameServer))
 
 	return
 }
@@ -198,4 +206,15 @@ func wrap(s string, err error) error {
 	}
 
 	return fmt.Errorf("%s: %w", s, err)
+}
+
+func writeResolv(ns net.IP) (err error) {
+	r, err := os.Create(ResolvFile)
+	if err != nil {
+		return
+	}
+
+	_, err = r.WriteString(fmt.Sprintf("nameserver %s\n", ns.String()))
+
+	return
 }
