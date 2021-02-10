@@ -120,7 +120,7 @@ func TestUp(t *testing.T) {
 			Enable: true,
 			DHCP:   true,
 		},
-		dclient: testDHCPClient{},
+		dclient4: testDHCPClient{},
 	}
 
 	ip4DHCPErr := Profile{
@@ -129,7 +129,7 @@ func TestUp(t *testing.T) {
 			Enable: true,
 			DHCP:   true,
 		},
-		dclient: testDHCPClient{err: true},
+		dclient4: testDHCPClient{err: true},
 	}
 
 	ip4DHCPClientErr := Profile{

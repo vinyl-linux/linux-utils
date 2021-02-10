@@ -15,6 +15,7 @@ import (
 	"github.com/vishvananda/netlink"
 )
 
+// netlink client
 type netlinkHandle interface {
 	LinkSetDown(netlink.Link) error
 	LinkSetUp(netlink.Link) error
@@ -23,13 +24,13 @@ type netlinkHandle interface {
 	LinkByName(string) (netlink.Link, error)
 }
 
-type dhcpOfferer interface {
+// dhcp4 dhcp client
+type dhcpOfferer4 interface {
 	DiscoverOffer(context.Context, ...dhcpv4.Modifier) (*dhcpv4.DHCPv4, error)
 }
 
 var (
-	handle  netlinkHandle
-	dclient dhcpOfferer
+	handle netlinkHandle
 )
 
 const DefaultPath = "/etc/vinyl/network.d"

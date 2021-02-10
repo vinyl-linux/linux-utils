@@ -61,8 +61,8 @@ type Profile struct {
 	// link points to the underlying netlink object
 	link netlink.Link
 
-	// dhcp client
-	dclient dhcpOfferer
+	// dhcp clients
+	dclient4 dhcpOfferer4
 }
 
 // NewProfile returns a Profile with initial defaults set
@@ -168,9 +168,14 @@ func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
 }
 
 func (p Profile) negotiateIPV4() (address, gateway net.IP, netmask net.IPMask, err error) {
-	log.Printf("negotiating eth0")
+	if p.dclient4 == nil {
+		p.dclient4, err = nclient4.New(p.Interface, nclient4.WithDebugLogger())
+		if err != nil {
+			return
+		}
+	}
 
-	offer, err := p.dclient.DiscoverOffer(context.Background())
+	offer, err := p.dclient4.DiscoverOffer(context.Background())
 	if err != nil {
 		panic(err)
 	}
