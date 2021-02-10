@@ -114,7 +114,7 @@ func (p Profile) Up() (err error) {
 
 // Down will bring an interface down
 func (p Profile) Down() (err error) {
-	return handle.LinkSetDown(p.link)
+	return wrap("iface Down", handle.LinkSetDown(p.link))
 }
 
 // PopulateFromDHCP accepts an index (where 0 is IPv4, and 1 is IPv6)
@@ -145,12 +145,15 @@ func (p Profile) negotiateIPV4() (address, gateway net.IP, netmask net.IPMask, e
 			p.dclient4, err = nclient4.New(p.Interface)
 		}
 		if err != nil {
+			err = wrap("nclient4.New", err)
+
 			return
 		}
 	}
 
 	offer, err := p.dclient4.DiscoverOffer(context.Background())
 	if err != nil {
+		err = wrap("dhcpv4 negotiation", err)
 		return
 	}
 
@@ -170,7 +173,7 @@ func (p Profile) SetAddress(a Address) (err error) {
 		},
 	}
 
-	return handle.AddrAdd(p.link, ipConfig)
+	return wrap("AddAddress", handle.AddrAdd(p.link, ipConfig))
 }
 
 // SetGateway uses netlink to set the gateway of an interface
@@ -182,10 +185,18 @@ func (p Profile) SetGateway(a Address) (err error) {
 		Dst:       &net.IPNet{IP: a.GatewayParsed, Mask: a.NetmaskParsed},
 	}
 
-	return handle.RouteAdd(route)
+	return wrap("SetGateway", handle.RouteAdd(route))
 }
 
 // BringUp uses netlink to bring an interface up
 func (p Profile) BringUp() (err error) {
-	return handle.LinkSetUp(p.link)
+	return wrap("iface Up", handle.LinkSetUp(p.link))
+}
+
+func wrap(s string, err error) error {
+	if err == nil {
+		return err
+	}
+
+	return fmt.Errorf("%s: %w", s, err)
 }
