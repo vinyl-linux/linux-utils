@@ -139,7 +139,7 @@ func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
     if p.dclient == nil {
         log.Print("no dhcp client, creating")
 
-        p.dclient, err = nclient4.New(p.link.Attrs().Name)
+        p.dclient, err = nclient4.New(p.Interface, nclient4.WithDebugLogger())
         if err != nil {
             panic(err)
         }
