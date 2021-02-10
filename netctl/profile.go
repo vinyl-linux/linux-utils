@@ -79,6 +79,12 @@ func (p Profile) Up() (err error) {
 		return
 	}
 
+	log.Print("bringing if up")
+	err = p.BringUp()
+	if err != nil {
+		panic(err)
+	}
+
 	for idx, addr := range []Address{
 		p.IPv4,
 		p.IPv6,
@@ -118,8 +124,8 @@ func (p Profile) Up() (err error) {
 		}
 	}
 
-	log.Printf("ready to bring up")
-	return p.BringUp()
+	log.Printf("ready")
+	return
 }
 
 // Down will bring an interface down
@@ -136,12 +142,6 @@ func (p Profile) Down() (err error) {
 // 4. Take the interface back down (to allow netlink to control the iface)
 // 5. Return
 func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
-	log.Print("bringing if up")
-	err = p.BringUp()
-	if err != nil {
-		panic(err)
-	}
-
 	if p.dclient == nil {
 		log.Print("no dhcp client, creating")
 
@@ -154,8 +154,6 @@ func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
 	}
 
 	log.Print("defering dropping (so we can bring it up after setting up")
-	// Bring back up after setting address
-	defer p.Down()
 
 	switch idx {
 	case 0:
