@@ -57,6 +57,8 @@ This command takes either an interface (eth0, wlan1, etc.) or the word "all" whi
 }
 
 func netctlUpDo(iface string, n netctl.Netctl) error {
+	netctl.Verbose = verbose
+
 	if iface == "all" {
 		return netctlUpDoAll(n)
 	}
@@ -88,4 +90,5 @@ func init() {
 	netctlCmd.AddCommand(netctl_upCmd)
 
 	netctl_upCmd.Flags().StringVarP(&netctlDir, "basedir", "b", netctl.DefaultPath, "location of network config files")
+	netctl_upCmd.Flags().BoolVarP(&verbose, "", "v", false, "log dhcp, network calls")
 }

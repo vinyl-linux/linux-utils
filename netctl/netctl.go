@@ -35,6 +35,9 @@ var (
 
 const DefaultPath = "/etc/vinyl/network.d"
 
+// Log calls
+var Verbose = false
+
 // Netctl provides access to the files at /etc/vinyl/network
 // which govern network connections on vinyl systems
 type Netctl struct {

@@ -139,7 +139,11 @@ func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
 
 func (p Profile) negotiateIPV4() (address, gateway net.IP, netmask net.IPMask, err error) {
 	if p.dclient4 == nil {
-		p.dclient4, err = nclient4.New(p.Interface, nclient4.WithDebugLogger())
+		if Verbose {
+			p.dclient4, err = nclient4.New(p.Interface, nclient4.WithDebugLogger())
+		} else {
+			p.dclient4, err = nclient4.New(p.Interface)
+		}
 		if err != nil {
 			return
 		}
