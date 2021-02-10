@@ -181,8 +181,7 @@ func (p Profile) SetGateway(a Address) (err error) {
 	route := &netlink.Route{
 		Scope:     netlink.SCOPE_UNIVERSE,
 		LinkIndex: p.link.Attrs().Index,
-		Src:       a.AddressParsed,
-		Dst:       &net.IPNet{IP: a.GatewayParsed, Mask: a.NetmaskParsed},
+		Gw:        a.GatewayParsed,
 	}
 
 	return wrap("SetGateway", handle.RouteAdd(route))
