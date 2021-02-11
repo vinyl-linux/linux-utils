@@ -6,10 +6,23 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"regexp"
 
 	"github.com/insomniacslk/dhcp/dhcpv4"
 	"github.com/insomniacslk/dhcp/dhcpv4/nclient4"
 	"github.com/vishvananda/netlink"
+)
+
+var (
+	// Test whether an interface is loopback by testing whether the name
+	// is suggests loopback by convention.
+	//
+	// This is a potentially weak way of doing this; realistically a loopback
+	// device can be named anything, and can only reliably be tested by checking
+	// for the IFF_LOOPBACK flag.
+	//
+	// However, it's probably fine /shrug
+	loopback = regexp.MustCompile(`^lo[0-9]*$`)
 )
 
 // Address holds the configuration necessary for setting
@@ -81,6 +94,13 @@ func (p Profile) Up() (err error) {
 		return
 	}
 
+	// Loopback devices are special; we can go ahead and set them
+	// up the same way each time. In fact, the loopback file only needs
+	// the value of `Interface` to be set
+	if loopback.Match([]byte(p.Interface)) {
+		return p.UpLoopback()
+	}
+
 	for idx, addr := range []Address{
 		p.IPv4,
 		p.IPv6,
@@ -110,6 +130,11 @@ func (p Profile) Up() (err error) {
 	}
 
 	return
+}
+
+// UpLoopback brings a loopback device up
+func (p Profile) UpLoopback() (err error) {
+	return p.BringUp()
 }
 
 // Down will bring an interface down
