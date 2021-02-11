@@ -161,6 +161,10 @@ func (p *Profile) PopulateFromDHCP(idx int, a *Address) (err error) {
 		err = fmt.Errorf("unknown index #%d", idx)
 	}
 
+	if err != nil {
+		return
+	}
+
 	return writeResolv(nameserver)
 }
 
