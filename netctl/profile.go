@@ -6,15 +6,10 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"os"
 
 	"github.com/insomniacslk/dhcp/dhcpv4"
 	"github.com/insomniacslk/dhcp/dhcpv4/nclient4"
 	"github.com/vishvananda/netlink"
-)
-
-var (
-	ResolvFile = "/etc/resolv.conf"
 )
 
 // Address holds the configuration necessary for setting
@@ -198,23 +193,4 @@ func (p Profile) SetGateway(a Address) (err error) {
 // BringUp uses netlink to bring an interface up
 func (p Profile) BringUp() (err error) {
 	return wrap("iface Up", handle.LinkSetUp(p.link))
-}
-
-func wrap(s string, err error) error {
-	if err == nil {
-		return err
-	}
-
-	return fmt.Errorf("%s: %w", s, err)
-}
-
-func writeResolv(ns net.IP) (err error) {
-	r, err := os.Create(ResolvFile)
-	if err != nil {
-		return
-	}
-
-	_, err = r.WriteString(fmt.Sprintf("nameserver %s\n", ns.String()))
-
-	return
 }
