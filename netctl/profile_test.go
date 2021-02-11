@@ -151,6 +151,11 @@ func TestUp(t *testing.T) {
 		Interface: "lo",
 	}
 
+	wifi := Profile{
+		Interface: "test0",
+		Wifi:      true,
+	}
+
 	for _, test := range []struct {
 		name        string
 		profile     Profile
@@ -163,6 +168,7 @@ func TestUp(t *testing.T) {
 		{"with dhcp errors", ip4DHCPErr, testNetLinkHandle{}, true},
 		{"dhcp client errors", ip4DHCPClientErr, testNetLinkHandle{}, true},
 		{"loopback", loopback, testNetLinkHandle{}, false},
+		{"wifi fails, not implemented", wifi, testNetLinkHandle{}, true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			handle = test.handle
