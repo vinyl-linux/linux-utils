@@ -96,6 +96,13 @@ func TestAddress_Parse(t *testing.T) {
 }
 
 func TestUp(t *testing.T) {
+	origResolv := ResolvFile
+	defer func() {
+		ResolvFile = origResolv
+	}()
+
+	ResolvFile = "/tmp/test-resolv.conf"
+
 	nonDHCP := Profile{
 		Interface: "test0",
 		IPv4: Address{
@@ -140,6 +147,10 @@ func TestUp(t *testing.T) {
 		},
 	}
 
+	loopback := Profile{
+		Interface: "lo",
+	}
+
 	for _, test := range []struct {
 		name        string
 		profile     Profile
@@ -151,6 +162,7 @@ func TestUp(t *testing.T) {
 		{"with dhcp", ip4DHCP, testNetLinkHandle{}, false},
 		{"with dhcp errors", ip4DHCPErr, testNetLinkHandle{}, true},
 		{"dhcp client errors", ip4DHCPClientErr, testNetLinkHandle{}, true},
+		{"loopback", loopback, testNetLinkHandle{}, false},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			handle = test.handle

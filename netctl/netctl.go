@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,8 +36,13 @@ var (
 
 const DefaultPath = "/etc/vinyl/network.d"
 
-// Log calls
-var Verbose = false
+var (
+	// Location of dns resolver config
+	ResolvFile = "/etc/resolv.conf"
+
+	// Log calls, operations
+	Verbose = false
+)
 
 // Netctl provides access to the files at /etc/vinyl/network
 // which govern network connections on vinyl systems
@@ -87,7 +93,7 @@ func (n *Netctl) parse(p string) error {
 		if strings.HasSuffix(info.Name(), ".toml") {
 			p, err := readProfile(path)
 			if err != nil {
-				return err
+				return wrap(path, err)
 			}
 
 			n.Profiles = append(n.Profiles, p)
@@ -107,6 +113,25 @@ func readProfile(filename string) (p Profile, err error) {
 	}
 
 	err = toml.Unmarshal(d, &p)
+
+	return
+}
+
+func wrap(s string, err error) error {
+	if err == nil {
+		return err
+	}
+
+	return fmt.Errorf("%s: %w", s, err)
+}
+
+func writeResolv(ns net.IP) (err error) {
+	r, err := os.Create(ResolvFile)
+	if err != nil {
+		return
+	}
+
+	_, err = r.WriteString(fmt.Sprintf("nameserver %s\n", ns.String()))
 
 	return
 }
