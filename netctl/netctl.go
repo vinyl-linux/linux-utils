@@ -93,7 +93,7 @@ func (n *Netctl) parse(p string) error {
 		if strings.HasSuffix(info.Name(), ".toml") {
 			p, err := readProfile(path)
 			if err != nil {
-				return err
+				return wrap(path, err)
 			}
 
 			n.Profiles = append(n.Profiles, p)
