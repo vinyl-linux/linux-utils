@@ -96,6 +96,13 @@ func TestAddress_Parse(t *testing.T) {
 }
 
 func TestUp(t *testing.T) {
+	origResolv := ResolvFile
+	defer func() {
+		ResolvFile = origResolv
+	}()
+
+	ResolvFile = "/tmp/test-resolv.conf"
+
 	nonDHCP := Profile{
 		Interface: "test0",
 		IPv4: Address{
