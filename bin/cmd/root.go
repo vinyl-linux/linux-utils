@@ -59,6 +59,7 @@ var (
 	groupName    string
 	netctlDir    string
 	verbose      bool
+	autoConnect  bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -102,4 +103,5 @@ func reset() {
 	groupName = ""
 	netctlDir = netctl.DefaultPath
 	verbose = false
+	autoConnect = false
 }

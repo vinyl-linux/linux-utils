@@ -5,7 +5,8 @@ CONFDIR ?= "$(PREFIX)/etc/vinyl/network.d"
 BINARIES := $(BINDIR)/linux-utils
 SCRIPTS := $(BINDIR)/useradd    \
 	   $(BINDIR)/groupadd   \
-	   $(BINDIR)/netctl
+	   $(BINDIR)/netctl     \
+	   $(BINDIR)/wifi
 
 CONFIGS := $(CONFDIR)/eth0.toml.sample
 
