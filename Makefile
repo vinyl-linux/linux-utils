@@ -9,12 +9,17 @@ SCRIPTS := $(BINDIR)/useradd    \
 
 CONFIGS := $(CONFDIR)/eth0.toml.sample
 
+BUILT_ON := $(shell date --rfc-3339=seconds | sed 's/ /T/')
+BUILT_BY := $(shell whoami)
+BUILD_REF := $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
+
 .PHONY: default install
 
 default: linux-utils
 
-linux-utils:
-	go build -o $@ ./bin/
+linux-utils: pkg = "github.com/vinyl-linux/linux-utils/bin/cmd"
+linux-utils: bin bin/*.go bin/**/*.go **/*.go
+	CGO_ENABLED=0 go build -ldflags="-s -w -X $(pkg).Ref=$(BUILD_REF) -X $(pkg).BuildUser=$(BUILT_BY) -X $(pkg).BuiltOn=$(BUILT_ON)" -trimpath -o $@ ./$</
 
 $(BINDIR):
 	mkdir -pv $@
@@ -22,14 +27,17 @@ $(BINDIR):
 $(CONFDIR):
 	mkdir -pv $@
 
-$(BINDIR)/linux-utils: linux-utils $(BINDIR)
-	install -m 0750 -o root $< $@
+$(BINDIR)/linux-utils: linux-utils | $(BINDIR)
+	install -m 0755 -o root $< $@
 
-$(BINDIR)/%: scripts/% $(BINDIR)
-	install -m 0750 -o root $< $@
+$(BINDIR)/%: scripts/% | $(BINDIR)
+	install -m 0755 -o root $< $@
 
-scripts/%:
-	@echo "#!/bin/sh -e\n\n$(BINDIR)/linux-utils $* \"\$${@}\"" > $@
+scripts/%: scripts
+	@echo -e "#!/bin/sh -e\n\n$(BINDIR)/linux-utils $* \"\$${@}\"" > $@
+
+scripts:
+	mkdir -pv $@
 
 $(CONFDIR)/eth0.toml.sample: $(CONFDIR)
 	@echo -e 'interface = "eth0"\n\n[IPv4]\n dhcp = true\n enable = true' > $@
