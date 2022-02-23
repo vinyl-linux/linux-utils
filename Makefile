@@ -28,10 +28,10 @@ $(CONFDIR):
 	mkdir -pv $@
 
 $(BINDIR)/linux-utils: linux-utils | $(BINDIR)
-	install -m 0755 -o root $< $@
+	install -m 0755 $< $@
 
 $(BINDIR)/%: scripts/% | $(BINDIR)
-	install -m 0755 -o root $< $@
+	install -m 0755 $< $@
 
 scripts/%: scripts
 	@echo -e "#!/bin/sh -e\n\n$(BINDIR)/linux-utils $* \"\$${@}\"" > $@
