@@ -27,10 +27,10 @@ $(BINDIR):
 $(CONFDIR):
 	mkdir -pv $@
 
-$(BINDIR)/linux-utils: linux-utils $(BINDIR)
+$(BINDIR)/linux-utils: linux-utils | $(BINDIR)
 	install -m 0750 -o root $< $@
 
-$(BINDIR)/%: scripts/% $(BINDIR)
+$(BINDIR)/%: scripts/% | $(BINDIR)
 	install -m 0750 -o root $< $@
 
 scripts/%: scripts
