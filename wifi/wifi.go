@@ -1,3 +1,4 @@
+//go:build linux
 // +build linux
 
 package wifi
@@ -219,8 +220,9 @@ func contains(ssid string, cn []wpasupplicant.ConfiguredNetwork) bool {
 
 func flattenErrs(errs []error) (err error) {
 	err = fmt.Errorf("error(s): ")
+
 	for _, e := range errs {
-		err = fmt.Errorf("%w %w", err, e)
+		err = fmt.Errorf("%w %s", err, e.Error())
 	}
 
 	return
