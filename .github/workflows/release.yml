@@ -5,7 +5,7 @@ on:
     types: [created, edited]
 
 jobs:
-  fuzz:
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -16,7 +16,7 @@ jobs:
 
     - name: Package
       run: |
-        make install PREFIX=linux-utils-x86_64
+        make package
         tar cvvjf linux-utils-x86_64.tar.bz2 linux-utils-x86_64
 
     - name: Release

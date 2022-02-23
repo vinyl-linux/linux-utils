@@ -1,0 +1,7 @@
+PREFIX ?= "/"
+
+default: install
+install:
+	install -m 0755 bin/* $(PREFIX)/bin/
+	install -m 0750 etc/vinyl/network.d $(PREFIX)/etc/vinyl/network.d -d
+	install -m 0640 etc/vinyl/network.d/eth0.toml.sample $(PREFIX)/etc/vinyl/network.d/eth0.toml.sample
