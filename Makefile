@@ -12,9 +12,9 @@ CONFIGS := $(CONFDIR)/eth0.toml.sample
 
 INSTALLERS := $(PREFIX)/Makefile
 
-BUILT_ON := $(shell date --rfc-3339=seconds | sed 's/ /T/')
-BUILT_BY := $(shell whoami)
-BUILD_REF := $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
+BUILT_ON ?= $(shell date --rfc-3339=seconds | sed 's/ /T/')
+BUILT_BY ?= $(shell whoami)
+BUILD_REF ?= $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
 
 .PHONY: default package
 

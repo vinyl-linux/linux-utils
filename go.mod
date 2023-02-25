@@ -1,25 +1,30 @@
 module github.com/vinyl-linux/linux-utils
 
-go 1.17
+go 1.20
 
 require (
-	github.com/insomniacslk/dhcp v0.0.0-20210120172423-cc9239ac6294
-	github.com/otiai10/copy v1.4.2
-	github.com/pelletier/go-toml v1.9.4
-	github.com/spf13/cobra v1.3.0
+	github.com/insomniacslk/dhcp v0.0.0-20230220063916-5369909a5de7
+	github.com/otiai10/copy v1.9.0
+	github.com/pelletier/go-toml v1.9.5
+	github.com/spf13/cobra v1.6.1
 	github.com/vishvananda/netlink v1.1.0
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	pifke.org/wpasupplicant v0.0.0-20200816231324-12bdf536389f
+	golang.org/x/crypto v0.6.0
+	pifke.org/wpasupplicant v0.0.0-20221018205742-4b5b2dde8b55
 )
 
 require (
-	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/mdlayher/ethernet v0.0.0-20190606142754-0394541c37b7 // indirect
-	github.com/mdlayher/raw v0.0.0-20191009151244-50f2db8cc065 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/josharian/native v1.1.0 // indirect
+	github.com/mdlayher/ethernet v0.0.0-20220221185849-529eae5b6118 // indirect
+	github.com/mdlayher/packet v1.1.1 // indirect
+	github.com/mdlayher/raw v0.1.0 // indirect
+	github.com/mdlayher/socket v0.4.0 // indirect
+	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/u-root/u-root v7.0.0+incompatible // indirect
-	github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df // indirect
-	golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d // indirect
-	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
-	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
+	github.com/u-root/uio v0.0.0-20230220225925-ffce2a382923 // indirect
+	github.com/vishvananda/netns v0.0.4 // indirect
+	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/sync v0.1.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
 )

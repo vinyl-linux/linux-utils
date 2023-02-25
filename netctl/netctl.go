@@ -1,3 +1,4 @@
+//go:build linux
 // +build linux
 
 package netctl
@@ -5,7 +6,6 @@ package netctl
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -34,13 +34,15 @@ var (
 	handle netlinkHandle
 )
 
+// DefautPath is the directory in which we look for profiles, should one not be
+// specified
 const DefaultPath = "/etc/vinyl/network.d"
 
 var (
-	// Location of dns resolver config
+	// ResolvFile is the location of dns resolver config
 	ResolvFile = "/etc/resolv.conf"
 
-	// Log calls, operations
+	// Verbose allows us to log calls, operations
 	Verbose = false
 )
 
@@ -107,7 +109,7 @@ func (n *Netctl) parse(p string) error {
 func readProfile(filename string) (p Profile, err error) {
 	p = NewProfile()
 
-	d, err := ioutil.ReadFile(filename)
+	d, err := os.ReadFile(filename)
 	if err != nil {
 		return
 	}

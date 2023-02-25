@@ -2,7 +2,7 @@ package cmd
 
 func ExampleVersion() {
 	rootCmd.SetArgs([]string{"version"})
-	rootCmd.Execute()
+	_ = rootCmd.Execute()
 	// output:
 	// linux-utils version
 	// ---
