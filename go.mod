@@ -8,6 +8,8 @@ require (
 	github.com/pelletier/go-toml v1.9.5
 	github.com/spf13/cobra v1.6.1
 	github.com/vishvananda/netlink v1.1.0
+	golang.org/x/crypto v0.6.0
+	pifke.org/wpasupplicant v0.0.0-20221018205742-4b5b2dde8b55
 )
 
 require (
@@ -24,4 +26,5 @@ require (
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
 )

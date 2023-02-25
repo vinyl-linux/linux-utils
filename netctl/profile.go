@@ -68,6 +68,7 @@ type Profile struct {
 	Interface string  `toml:"interface"`
 	IPv4      Address `toml:",omitempty"`
 	IPv6      Address `toml:",omitempty"`
+	Wifi      bool    `toml:wifi,omitempty`
 
 	// link points to the underlying netlink object
 	link netlink.Link
@@ -93,13 +94,34 @@ func (p Profile) Up() (err error) {
 		return
 	}
 
-	// Loopback devices are special; we can go ahead and set them
-	// up the same way each time. In fact, the loopback file only needs
-	// the value of `Interface` to be set
-	if loopback.Match([]byte(p.Interface)) {
-		return p.UpLoopback()
+	switch {
+	case loopback.Match([]byte(p.Interface)):
+		// Loopback devices are special; we can go ahead and set them
+		// up the same way each time. In fact, the loopback file only needs
+		// the value of `Interface` to be set
+		err = p.UpLoopback()
+
+	case p.Wifi:
+		// Wifi interfaces get handled via wpa_supplicant
+		err = p.UpWifi()
+
+	default:
+		// Any interface left-over must be a wired interface
+		err = p.UpWired()
 	}
 
+	return
+}
+
+// UpWifi brings up a wifi network via wpa_supplicant
+func (p Profile) UpWifi() (err error) {
+	err = fmt.Errorf("bringing up wifi networks has not been implemented yet")
+
+	return
+}
+
+// UpWired brings a wired network connection up
+func (p Profile) UpWired() (err error) {
 	for idx, addr := range []Address{
 		p.IPv4,
 		p.IPv6,
