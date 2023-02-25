@@ -1,3 +1,4 @@
+//go:build linux
 // +build linux
 
 package netctl
@@ -60,8 +61,6 @@ func (a *Address) Parse() {
 	if a.Gateway != "" {
 		a.GatewayParsed = net.ParseIP(a.Gateway)
 	}
-
-	return
 }
 
 // Profile contains configuration and data for an interface
