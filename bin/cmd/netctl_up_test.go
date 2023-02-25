@@ -1,18 +1,16 @@
+//go:build linux
 // +build linux
 
 package cmd
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"testing"
 )
 
 func TestNetctl_Up(t *testing.T) {
-	dir, err := ioutil.TempDir("", "")
-	if err != nil {
-		t.Fatalf("unexpected error: %#v", err)
-	}
+	dir, _ := os.MkdirTemp("", "")
 
 	for _, test := range []struct {
 		name        string

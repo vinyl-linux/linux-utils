@@ -15,11 +15,11 @@ var (
 	// File points to the passwd file
 	File = "/etc/passwd"
 
-	// SystemMin/ Max provide a range for system account UIDs
+	// SystemMin and SystemMax provide a range for system account UIDs
 	SystemMin = 2 // ensure we don't blat away root for any reason <3
 	SystemMax = 999
 
-	// UserMin/ Max provide a range for user account UIDs
+	// UserMin and UserMax provide a range for user account UIDs
 	UserMin = 1000
 	UserMax = 10000
 

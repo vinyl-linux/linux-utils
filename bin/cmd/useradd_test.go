@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -14,7 +13,7 @@ import (
 func tmpFileAndCopy(in string) (fn string, err error) {
 	// copy test.pwdFile to some tmpfile
 	// re-open pwd pointing to it
-	tmp, err := ioutil.TempFile("", "")
+	tmp, err := os.CreateTemp("", "")
 	if err != nil {
 		return
 	}
@@ -35,8 +34,6 @@ func tmpFileAndCopy(in string) (fn string, err error) {
 }
 
 func TestUseradd(t *testing.T) {
-	dollar0 = "useradd"
-
 	for _, test := range []struct {
 		name        string
 		args        []string
@@ -87,7 +84,7 @@ func TestUseradd(t *testing.T) {
 			rootCmd.SetOut(b)
 
 			reset()
-			basedir, _ = ioutil.TempDir("", "")
+			basedir, _ = os.MkdirTemp("", "")
 
 			err = rootCmd.Execute()
 			if err == nil && test.expectError {

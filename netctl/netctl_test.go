@@ -1,10 +1,11 @@
+//go:build linux
 // +build linux
 
 package netctl
 
 import (
-	"io/ioutil"
 	"net"
+	"os"
 	"testing"
 )
 
@@ -80,7 +81,7 @@ func TestWriteResolve(t *testing.T) {
 				t.Errorf("unexpected error: %#v", err)
 			}
 
-			got, _ := ioutil.ReadFile(test.fn)
+			got, _ := os.ReadFile(test.fn)
 			gots := string(got)
 
 			if test.expect != gots {
